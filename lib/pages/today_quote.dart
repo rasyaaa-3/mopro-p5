@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mopro_p5/widgets/quote_card.dart';
+import 'package:mopro_p5/pages/more_quotes.dart';
 
 class TodayQuote extends StatefulWidget {
   const TodayQuote({super.key});
@@ -52,7 +53,11 @@ class _TodayQuoteState extends State<TodayQuote> {
             QuoteCard(quote: "Isi Quote", author: "Anonymous"),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => MoreQuotes())
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue[400],
                 foregroundColor: Colors.white,
