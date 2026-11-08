@@ -15,18 +15,21 @@ class _MoreQuotesState extends State<MoreQuotes> {
   // Isi Logic 1
   int limit = 10;
   int pagination = 1;
+  int total = 0; // total quotes di DummyJSON, dipakai buat batas tombol Next
   late Future<List<Quote>> quotes;
 
   Future<List<Quote>> fetchQuotes() async {
     final response = await http.get(
       Uri.https('dummyjson.com', '/quotes', {
         'limit': '$limit',
-        'skip': '${limit * pagination}',
+        'skip': '${limit * (pagination - 1)}',
       })
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body)['quotes'] as List<dynamic>;
+      final body = jsonDecode(response.body);
+      total = body['total'] as int;
+      List<dynamic> data = body['quotes'] as List<dynamic>;
 
       return data.map((quote) => Quote.fromJson(quote)).toList();
     } else {
@@ -71,7 +74,7 @@ class _MoreQuotesState extends State<MoreQuotes> {
                 } else if (snapshot.hasError) {
                   return SliverToBoxAdapter(
                     child: Text(
-                      '${snapshot.error}\n${snapshot.stackTrace}',
+                      '${snapshot.error}',
                       style: TextStyle(
                         color: Colors.red,
                       ),
@@ -104,13 +107,13 @@ class _MoreQuotesState extends State<MoreQuotes> {
                     ),
                     SizedBox(width: 20),
                     ElevatedButton.icon(
-                      onPressed: () {
+                      onPressed: limit * pagination < total ? () {
                         // Isi Logic 3
                         setState(() {
                           pagination++;
                           quotes = fetchQuotes();
                         });
-                      },
+                      } : null,
                       label: Text("Next"),
                       icon: Icon(Icons.chevron_right),
                       iconAlignment: IconAlignment.end,
